@@ -22,4 +22,9 @@ This project is a webapp built with React meant to be used as a checklist for th
         <td>28x32</td>
         <td>112x128</td>
     </tr>
+    <tr>
+        <td>Plain achievement</td>
+        <td>52x52</td>
+        <td>208x208</td>
+    </tr>
 </table>

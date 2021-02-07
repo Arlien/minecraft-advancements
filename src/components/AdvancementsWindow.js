@@ -2,11 +2,12 @@ import React from "react";
 import {withStyles} from "@material-ui/core";
 import AdvancementsPager from "./AdvancementsPager";
 import AdvancementsGrabbableView from "./AdvancementsGrabbableView";
+import {BACKGROUND_TILE_SIZE, WINDOW_HEIGHT, WINDOW_WIDTH} from "../config";
 
 const styles = theme => ({
     root: {
-        width: "1008px",
-        height: "560px",
+        width: `${WINDOW_WIDTH}px`,
+        height: `${WINDOW_HEIGHT}px`,
         margin: "auto",
     },
     frame: {
@@ -17,6 +18,7 @@ const styles = theme => ({
         backgroundImage: `url("./assets/img/window.png")`,
         backgroundRepeat: "no-repeat",
         backgroundSize: "1008px",
+        pointerEvents: "none",
     },
     background: {
         position: "relative",
@@ -24,7 +26,7 @@ const styles = theme => ({
         top: "2.5%",
         width: "95%",
         height: "95%",
-        backgroundSize: 40
+        backgroundSize: BACKGROUND_TILE_SIZE
     },
     pagerContainer: {
         display: "flex",
@@ -44,20 +46,28 @@ const AdvancementsWindowTypes = {
     MINECRAFT: {
         image: "stone.png",
         logo: "grass.png",
-        advancements: {
-            0: {
+        advancements: [
+            {
+                id: 0,
                 title: "Minecraft",
                 description: "The heart and story of the game",
+                logo: "grass.png",
+                level: 0,
                 parent: null,
-                logo: "grass.png"
+                children: 1,
+                achieved: true
             },
-            1: {
+            {
+                id: 1,
                 title: "Stone age",
                 description: "Mine stone with your new pickaxe",
+                logo: "wooden_pickaxe.png",
+                level: 1,
                 parent: 0,
-                logo: "wooden_pickaxe.png"
+                children: 0,
+                achieved: false
             },
-        }
+        ]
     },
     ADVENTURE: {
         image: "adventure.png",
@@ -81,46 +91,22 @@ class AdvancementsWindow extends React.Component {
 
     state = {
         advancementsType: AdvancementsWindowTypes.MINECRAFT,
-        x: 0,
-        y: 0,
-        isGrabbing: false
     }
 
     constructor() {
         super();
         this.handleChangeAdvanementsType = this.handleChangeAdvanementsType.bind(this);
-        this.handleGrab = this.handleGrab.bind(this);
     }
 
     handleChangeAdvanementsType(type) {
         this.setState({
             ...this.state,
             advancementsType: type,
-            x: 0,
-            y: 0,
         })
     }
 
-    toggleGrab(value) {
-        this.setState({
-            ...this.state,
-            isGrabbing: value
-        });
-    }
-
-    handleGrab(e) {
-        const {isGrabbing, x, y} = this.state;
-        if (isGrabbing) {
-            this.setState({
-                ...this.state,
-                x: x + e.movementX < 0 && x + e.movementX > -500 ? x + e.movementX : x,
-                y: y + e.movementY < 0 && y + e.movementY > -500 ? y + e.movementY : y
-            });
-        }
-    }
-
     render() {
-        const {advancementsType, x, y, isGrabbing} = this.state;
+        const {advancementsType} = this.state;
         const {classes} = this.props;
 
         return (
@@ -132,15 +118,12 @@ class AdvancementsWindow extends React.Component {
                         )
                     })}
                 </div>
-                <div style={{
-                    cursor: isGrabbing ? 'grabbing' : 'grab'
-                }}
-                    className={classes.frame} onMouseMove={this.handleGrab} onMouseDown={()=>this.toggleGrab(true)} onMouseUp={()=>this.toggleGrab(false)}>
+                <div className={classes.frame}>
                     <div className={classes.windowTitle}>
                         Advancements
                     </div>
                 </div>
-                <AdvancementsGrabbableView x={x} y={y} type={advancementsType}/>
+                <AdvancementsGrabbableView type={advancementsType}/>
             </div>
         )
     }
